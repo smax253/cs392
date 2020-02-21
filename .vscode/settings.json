@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "cerrno": "c",
+        "atomic": "c",
+        "*.tcc": "c",
+        "fstream": "c",
+        "sstream": "c"
+    }
+}
