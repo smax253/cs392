@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
-#include <errno.h>
 #include "quicksort.h"
 
 #define MAX_STRLEN     64 // Not including '\0'

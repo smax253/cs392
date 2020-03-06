@@ -4,6 +4,10 @@
         "atomic": "c",
         "*.tcc": "c",
         "fstream": "c",
-        "sstream": "c"
+        "sstream": "c",
+        "cstdlib": "c",
+        "stdlib.h": "c",
+        "stdio.h": "c",
+        "limits.h": "c"
     }
 }
