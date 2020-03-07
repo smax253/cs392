@@ -90,7 +90,7 @@ int main(int argc, char * argv[]){
         display_usage(argv[0]);
         return EXIT_FAILURE;
     }
-    while((opt = getopt(argc, argv, ":d:p:")) != -1){//d - directory, p- perm string
+    while((opt = getopt(argc, argv, ":d:p:h")) != -1){//d - directory, p- perm string
         switch (opt) {
             case 'p':
                 perm_string = optarg;
@@ -100,9 +100,11 @@ int main(int argc, char * argv[]){
                 dir_path = optarg;
                 dflag = true;
                 break;
+            case 'h':
+                display_usage(argv[0]);
+                return EXIT_SUCCESS;
             case '?':
                 fprintf(stderr, "Unknown option '-%c' received.\n", optopt);
-                //display_usage(argv[0]);
                 return EXIT_FAILURE;
                 break;
         }
@@ -116,7 +118,8 @@ int main(int argc, char * argv[]){
         return EXIT_FAILURE;
     }
     int perm_code = permstring_to_int(perm_string);
-    printf("Perm string: %s, Dir path: %s, Perm Code: %d\n", perm_string, dir_path, perm_code);
+    //printf("Perm string: %s, Dir path: %s, Perm Code: %d\n", perm_string, dir_path, perm_code);
+    
     char path[PATH_MAX];
     if(realpath(dir_path, path) == NULL){
         fprintf(stderr, "Error: Cannot get full path of file '%s'. %s.\n", dir_path, strerror(errno));
