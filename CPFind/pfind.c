@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * Name        : pfind.c
+ * Author      : Max Shi
+ * Date        : 3/7/2020
+ * Description : Recurse on the given directory and print out the file paths of every file that matches the given permission string
+ * Pledge : I pledge my honor that I have abided by the Stevens Honor System.
+ ******************************************************************************/
 #include <errno.h>
 #include <getopt.h>
 #include <stdio.h>
@@ -9,8 +16,9 @@
 #include <dirent.h>
 #include <limits.h>
 
-#define match_perms(a,b) (((a)&(b))==(a))
+#define match_perms(a,b) (((a)^((fullperms)&(b)))==0)
 
+int fullperms = 0;
 int perms[] = {S_IRUSR, S_IWUSR, S_IXUSR,
                S_IRGRP, S_IWGRP, S_IXGRP,
                S_IROTH, S_IWOTH, S_IXOTH};
@@ -32,14 +40,14 @@ int permstring_to_int(char *permstring){
         
         if(permstring[i+2] != '-' && permstring[i+2] != 'x') return -1;
         else if(permstring[i+2] == 'x') result = result | perms[i+2];
-    }
+    }  
     return result;
 }
 
 void navigate(int permval, char *dir_path){
     DIR *dir;
     if((dir = opendir(dir_path))==NULL){
-        fprintf(stderr, "Error: Cannot open directory '%s'. %s\n", dir_path, strerror(errno));
+        fprintf(stderr, "Error: Cannot open directory '%s'. %s.\n", dir_path, strerror(errno));
         return;
     }
     struct dirent *entry;
@@ -53,7 +61,7 @@ void navigate(int permval, char *dir_path){
         strncpy(full_filename, dir_path, PATH_MAX-1);
     }
     pathlen = strlen(full_filename)+1; //add 1 because we're going to add a '/'.
-
+    
     full_filename[pathlen-1] = '/';
     full_filename[pathlen] = '\0';
 
@@ -63,9 +71,10 @@ void navigate(int permval, char *dir_path){
         }
         strncpy(full_filename+pathlen, entry->d_name, PATH_MAX-pathlen);
         if (lstat(full_filename, &sb)<0){
-            fprintf(stderr, "Error: Cannot stat file '%s'. %s\n", full_filename, strerror(errno));
+            fprintf(stderr, "Error: Cannot stat file '%s'. %s.\n", full_filename, strerror(errno));
             continue;
         }
+        //printf("%s match permstring with %d, fullperms = %d\n", full_filename, match_perms(permval, sb.st_mode), fullperms);
         if(entry->d_type == DT_DIR){
             if(match_perms(permval, sb.st_mode)){
                 printf("%s\n", full_filename);
@@ -117,9 +126,20 @@ int main(int argc, char * argv[]){
         fprintf(stderr, "Error: Required argument -p <permissions string> not found.\n");
         return EXIT_FAILURE;
     }
+    for(int i = 0; i<9; i++){
+        fullperms = fullperms | perms[i];
+    }
     int perm_code = permstring_to_int(perm_string);
-    //printf("Perm string: %s, Dir path: %s, Perm Code: %d\n", perm_string, dir_path, perm_code);
-    
+    //o+xprintf("Perm string: %s, Dir path: %s, Perm Code: %d\n", perm_string, dir_path, perm_code);
+    struct stat sb;
+    if (lstat(dir_path, &sb)<0){
+        fprintf(stderr, "Error: Cannot stat '%s'. %s.\n", dir_path, strerror(errno));
+        return EXIT_FAILURE;
+    }
+    if (perm_code == -1){
+        fprintf(stderr, "Error: Permissions string '%s' is invalid.\n", perm_string);
+        return EXIT_FAILURE;
+    }
     char path[PATH_MAX];
     if(realpath(dir_path, path) == NULL){
         fprintf(stderr, "Error: Cannot get full path of file '%s'. %s.\n", dir_path, strerror(errno));

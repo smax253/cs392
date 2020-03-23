@@ -1,0 +1,1 @@
+Error: Permissions string '-----haha' is invalid.
