@@ -13,6 +13,7 @@
 #include <string.h>
 #include <getopt.h>
 #include "quicksort.h"
+#include "mergesort.h"
 
 #define MAX_STRLEN     64 // Not including '\0'
 #define MAX_ELEMENTS 1024
@@ -100,7 +101,7 @@ int main(int argc, char **argv) {
             sscanf(input[i], "%d", &current);
             toSort[i] = current;
         }
-        quicksort(&toSort, index, sizeof(int), int_cmp);
+        mergesort(&toSort, index, sizeof(int), int_cmp);
         for(int i = 0; i<index; i++){
             printf("%d\n", toSort[i]);
         }
@@ -113,7 +114,7 @@ int main(int argc, char **argv) {
             sscanf(input[i], "%lf", &current);
             toSort[i] = current;
         }
-        quicksort(&toSort, index, sizeof(double), dbl_cmp);
+        mergesort(&toSort, index, sizeof(double), dbl_cmp);
         for(int i = 0; i<index; i++){
             printf("%f\n", toSort[i]);
         }
@@ -123,7 +124,7 @@ int main(int argc, char **argv) {
         for(int i = 0; i<index; i++){
             strcpy(toSort[i], input[i]);
         }
-        quicksort(&toSort, index, MAX_STRLEN+2, str_cmp);
+        mergesort(&toSort, index, MAX_STRLEN+2, str_cmp);
         for(int i = 0; i<index; i++){
             printf("%s\n", toSort[i]);
         }
